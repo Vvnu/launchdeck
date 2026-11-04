@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { signIn } from '../services/auth'
+import { useNavigate } from 'react-router-dom'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const navigate = useNavigate()
 
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -16,6 +18,7 @@ export default function Login() {
 
     try {
       await signIn(email, password)
+      navigate('/dashboard' , { replace: true })
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Login failed'

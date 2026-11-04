@@ -69,6 +69,8 @@ interface UpdateProductInput {
   tagline?: string
   description?: string
   website_url?: string
+  status?: 'draft' | 'launched'
+
 }
 
 export async function updateProduct(
@@ -119,4 +121,34 @@ export async function deleteProduct(productId: string) {
     .eq('owner_id', user.id)
 
   if (error) throw error
+}
+
+
+
+
+// Fetch all publicly launched products
+export async function getLaunchedProducts() {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('status', 'launched')
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+
+  return data
+}
+
+// Fetch one publicly launched product using its slug
+export async function getLaunchedProductBySlug(slug: string) {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('slug', slug)
+    .eq('status', 'launched')
+    .maybeSingle()
+
+  if (error) throw error
+
+  return data
 }

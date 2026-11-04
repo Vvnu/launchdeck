@@ -1,11 +1,20 @@
 
 import { useEffect, useState } from 'react'
-
+// import CreateProductForm from '../components/CreateProductForm'
 import EditProductForm from '../components/EditProductForm'
 import { signOut } from '../services/auth'
-import { getProducts, deleteProduct } from '../services/products'
+import {
+  getProducts,
+  deleteProduct,
+  updateProduct,
+} from '../services/products'
+
 import { useAuth } from '../context/AuthContext'
 import type { Product } from '../types/product'
+import { Link } from 'react-router-dom'
+
+
+
 
 export default function Dashboard() {
   const { user } = useAuth()
@@ -65,28 +74,64 @@ export default function Dashboard() {
     }
   }
 
+  async function handlePublishToggle(product: Product) {
+  const newStatus =
+    product.status === 'draft' ? 'launched' : 'draft'
+
+  try {
+    const updatedProduct = await updateProduct(product.id, {
+      status: newStatus,
+    })
+
+    setProducts((currentProducts) =>
+      currentProducts.map((item) =>
+        item.id === updatedProduct.id ? updatedProduct : item
+      )
+    )
+  } catch (err) {
+    setError(
+      err instanceof Error
+        ? err.message
+        : 'Failed to update product status'
+    )
+  }
+}
+
+
+
+
   return (
     <main className="min-h-screen bg-zinc-950 p-8 text-white">
       <div className="mx-auto max-w-5xl">
 
         {/* Dashboard Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">
-              Welcome to LaunchDeck
-            </h1>
-            <p className="mt-2 text-zinc-400">
-              {user?.email}
-            </p>
-          </div>
 
-          <button
-            onClick={handleLogout}
-            className="rounded-lg bg-red-600 px-4 py-2 hover:bg-red-500"
-          >
-            Logout
-          </button>
-        </div>
+     <div className="flex items-center justify-between">
+  <div>
+    <h1 className="text-3xl font-bold">Welcome to LaunchDeck</h1>
+    <p className="mt-2 text-zinc-400">{user?.email}</p>
+  </div>
+
+  <div className="flex items-center gap-3">
+    <Link
+      to="/dashboard/products/new"
+      className="rounded-lg bg-indigo-600 px-4 py-2 hover:bg-indigo-500"
+    >
+      + Add Product
+    </Link>
+
+    <button
+      onClick={handleLogout}
+      className="rounded-lg bg-red-600 px-4 py-2 hover:bg-red-500"
+    >
+      Logout
+    </button>
+  </div>
+</div>
+
+
+
+
 
         {/* Products Section */}
         <section className="mt-10">
@@ -155,6 +200,22 @@ export default function Dashboard() {
                 >
                   Delete
                 </button>
+
+ <button
+  onClick={() => handlePublishToggle(product)}
+  className={`ml-2 rounded-lg px-3 py-2 ${
+    product.status === 'draft'
+      ? 'bg-emerald-600 hover:bg-emerald-500'
+      : 'bg-amber-600 hover:bg-amber-500'
+  }`}
+>
+  {product.status === 'draft' ? 'Publish' : 'Unpublish'}
+</button>
+
+
+
+
+
 
                 {/* Edit Form */}
                 {editingProductId === product.id && (

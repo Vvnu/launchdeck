@@ -1,8 +1,15 @@
+
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { createProduct } from '../services/products'
 
-export default function CreateProductForm() {
+interface CreateProductFormProps {
+  onCreated: () => void
+}
+
+export default function CreateProductForm({
+  onCreated,
+}: CreateProductFormProps) {
   const [name, setName] = useState('')
   const [slug, setSlug] = useState('')
   const [tagline, setTagline] = useState('')
@@ -11,13 +18,11 @@ export default function CreateProductForm() {
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
     setError('')
-    setSuccess('')
     setLoading(true)
 
     try {
@@ -29,14 +34,8 @@ export default function CreateProductForm() {
         website_url: websiteUrl,
       })
 
-      setSuccess('Product created successfully!')
-
-      // Clear the form after successful creation
-      setName('')
-      setSlug('')
-      setTagline('')
-      setDescription('')
-      setWebsiteUrl('')
+      // Notify the parent page that creation succeeded.
+      onCreated()
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Something went wrong'
@@ -47,7 +46,7 @@ export default function CreateProductForm() {
   }
 
   return (
-    <div className="w-full max-w-xl rounded-2xl border border-zinc-800 bg-zinc-900 p-6 text-white">
+    <div className="w-full rounded-2xl border border-zinc-800 bg-zinc-900 p-6 text-white">
       <h2 className="text-2xl font-bold">Create a Product</h2>
 
       <p className="mt-2 text-sm text-zinc-400">
@@ -55,7 +54,6 @@ export default function CreateProductForm() {
       </p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-
         <input
           type="text"
           placeholder="Product name"
@@ -105,10 +103,6 @@ export default function CreateProductForm() {
           <p className="text-sm text-red-400">{error}</p>
         )}
 
-        {success && (
-          <p className="text-sm text-green-400">{success}</p>
-        )}
-
         <button
           type="submit"
           disabled={loading}
@@ -116,7 +110,6 @@ export default function CreateProductForm() {
         >
           {loading ? 'Creating...' : 'Create Product'}
         </button>
-
       </form>
     </div>
   )
