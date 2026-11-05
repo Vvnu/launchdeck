@@ -1,10 +1,11 @@
 import { supabase } from './supabase'
-
+import type { ProductCategory } from '../types/product'
 interface CreateProductInput {
   name: string
   slug: string
   tagline: string
   description: string
+  category: ProductCategory
   website_url: string
 }
 
@@ -70,6 +71,7 @@ interface UpdateProductInput {
   description?: string
   website_url?: string
   status?: 'draft' | 'launched'
+  category?: ProductCategory
 
 }
 

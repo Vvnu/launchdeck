@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { updateProduct } from '../services/products'
 import type { Product } from '../types/product'
+import type { ProductCategory } from '../types/product'
+
 
 interface EditProductFormProps {
   product: Product
@@ -17,6 +19,7 @@ export default function EditProductForm({
   const [slug, setSlug] = useState(product.slug)
   const [tagline, setTagline] = useState(product.tagline)
   const [description, setDescription] = useState(product.description)
+  const [category, setCategory] = useState(product.category)
   const [websiteUrl, setWebsiteUrl] = useState(product.website_url)
 
   const [loading, setLoading] = useState(false)
@@ -34,6 +37,7 @@ export default function EditProductForm({
         tagline,
         description,
         website_url: websiteUrl,
+        category,
       })
 
       onUpdated(updatedProduct as Product)
@@ -72,6 +76,30 @@ export default function EditProductForm({
         placeholder="Tagline"
         className="w-full rounded-lg border border-zinc-700 bg-zinc-900 p-3"
       />
+
+<div>
+  <label className="mb-1.5 block text-sm text-zinc-300">
+    Product Category
+  </label>
+
+  <select
+    value={category}
+    onChange={(e) =>
+      setCategory(e.target.value as ProductCategory)
+    }
+    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2.5 text-sm text-white outline-none transition focus:border-indigo-500"
+  >
+    <option value="AI & Machine Learning">AI & Machine Learning</option>
+    <option value="Developer Tools">Developer Tools</option>
+    <option value="Productivity">Productivity</option>
+    <option value="Design">Design</option>
+    <option value="Marketing">Marketing</option>
+    <option value="Finance">Finance</option>
+    <option value="Education">Education</option>
+    <option value="Other">Other</option>
+  </select>
+</div>
+
 
       <textarea
         value={description}
